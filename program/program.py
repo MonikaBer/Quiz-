@@ -30,11 +30,12 @@ def main():
 
     data = list(map(f, data))
 
-    question = collections.namedtuple("question", ["nr", "question", "A", "B", "C", "D", "correctAnswer"])
+    question = collections.namedtuple("question", ["nr", "question", "A", "B", "C", "D", "correctAnswer",
+                                                   "info"])
     listOfQuestions = []
     for i in range(1, 11):
         listOfQuestions.append(question(i, data[i - 1][0], data[i - 1][1], data[i - 1][2], data[i - 1][3],
-                                          data[i - 1][4], data[i - 1][5]))
+                                          data[i - 1][4], data[i - 1][5], data[i-1][6]))
 
     def begin(_event):
         buttonStart.pack_forget()
@@ -101,7 +102,7 @@ def main():
                                                      buttonC, buttonD))
 
     def helperToCheck(choice, correctAnswer, buttonA, buttonB, buttonC, buttonD):
-        global score, state
+        global score, state, index
         if choice == correctAnswer:
             score += 1
             messagebox.showinfo(title="Info", message="Exactly!")
@@ -128,6 +129,9 @@ def main():
             buttonD.config(bg='SpringGreen')
         else:
             assert False
+
+        messagebox.showinfo(title="More information", message=listOfQuestions[index].info)
+
         if state != State.lastQuestion and state != State.theEnd:
             state = State.marked
 
