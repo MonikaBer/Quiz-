@@ -1,6 +1,6 @@
 from tkinter import Tk, Frame, Label, Button, BOTTOM
 import sys
-from time import sleep
+import time
 import collections
 from tkinter import messagebox
 from enum import Enum
@@ -30,70 +30,116 @@ def main():
 
     data = list(map(f, data))
 
-    question = collections.namedtuple("question", ["nr", "question", "A", "B", "C", "D", "correct_answer"])
-    list_of_questions = []
+    question = collections.namedtuple("question", ["nr", "question", "A", "B", "C", "D", "correctAnswer"])
+    listOfQuestions = []
     for i in range(1, 11):
-        list_of_questions.append(question(i, data[i - 1][0], data[i - 1][1], data[i - 1][2], data[i - 1][3],
+        listOfQuestions.append(question(i, data[i - 1][0], data[i - 1][1], data[i - 1][2], data[i - 1][3],
                                           data[i - 1][4], data[i - 1][5]))
 
     def begin(_event):
-        b_start.pack_forget()
-        l1.config(text="Good luck!")
-        l2.pack_forget()
-        l3.pack_forget()
-        show_question(top_frame)
+        buttonStart.pack_forget()
+        line1.config(text="Good luck!")
+        line2.pack_forget()
+        line3.pack_forget()
+        showQuestion(topFrame)
 
-    def show_question(top_frame):
+    def showQuestion(topFrame):
         global index, state
-        view = Frame(top_frame, background='Blue')
+        view = Frame(topFrame, background='Blue')
         view.pack()
-        l_question = Label(view, text=list_of_questions[index].question)
-        b_A = Button(view, text=list_of_questions[index].A)
-        b_B = Button(view, text=list_of_questions[index].B)
-        b_C = Button(view, text=list_of_questions[index].C)
-        b_D = Button(view, text=list_of_questions[index].D)
-        b_next = Button(view, text="Next", bg='Violet', fg='white')
-        b_score = Button(view, text="Show score", bg='Violet', fg='white')
-        l_question.pack()
-        b_A.pack()
-        b_B.pack()
-        b_C.pack()
-        b_D.pack()
+        askQuestion = Label(view, text=listOfQuestions[index].question)
+        buttonA = Button(view, text=listOfQuestions[index].A)
+        buttonB = Button(view, text=listOfQuestions[index].B)
+        buttonC = Button(view, text=listOfQuestions[index].C)
+        buttonD = Button(view, text=listOfQuestions[index].D)
+        buttonNext = Button(view, text="Next", bg='Violet', fg='white')
+        buttonScore = Button(view, text="Show score", bg='Violet', fg='white')
+        askQuestion.pack()
+        buttonA.pack()
+        buttonB.pack()
+        buttonC.pack()
+        buttonD.pack()
         if state == State.lastQuestion or state == State.theEnd:
-            b_score.pack()
+            buttonScore.pack()
         else:
-            b_next.pack()
+            buttonNext.pack()
             state = State.unmarked
-        b_A.bind("<Button-1>", lambda e: check(e, "A", list_of_questions[index].correct_answer))
-        b_B.bind("<Button-1>", lambda e: check(e, "B", list_of_questions[index].correct_answer))
-        b_C.bind("<Button-1>", lambda e: check(e, "C", list_of_questions[index].correct_answer))
-        b_D.bind("<Button-1>", lambda e: check(e, "D", list_of_questions[index].correct_answer))
-        b_next.bind("<Button-1>", lambda e: change_view(e, view, top_frame))
-        b_score.bind("<Button-1>", show_score)
+        buttonA.bind("<Button-1>", lambda e: check(e, "A", listOfQuestions[index].correctAnswer,
+                                                   buttonA, buttonB, buttonC, buttonD))
+        buttonB.bind("<Button-1>", lambda e: check(e, "B", listOfQuestions[index].correctAnswer,
+                                                   buttonA, buttonB, buttonC, buttonD))
+        buttonC.bind("<Button-1>", lambda e: check(e, "C", listOfQuestions[index].correctAnswer,
+                                                   buttonA, buttonB, buttonC, buttonD))
+        buttonD.bind("<Button-1>", lambda e: check(e, "D", listOfQuestions[index].correctAnswer,
+                                                   buttonA, buttonB, buttonC, buttonD))
+        buttonNext.bind("<Button-1>", lambda e: changeView(e, view, topFrame))
+        buttonScore.bind("<Button-1>", showScore)
         return view
 
-    def check(_event, choice, correct_answer):
-        global index, score, state
+    def check(_event, choice, correctAnswer, buttonA, buttonB, buttonC, buttonD):
+        global score, state
         if state == State.unmarked or state == State.lastQuestion:
             if state == State.lastQuestion:
                 state = State.theEnd
-            if choice == correct_answer:
-                score += 1
-                messagebox.showinfo(title="Info", message="Exactly!")
-            else:
-                messagebox.showinfo(title="Info", message="Wrong!")
-            if state != State.lastQuestion and state != State.theEnd:
-                state = State.marked
 
-    def change_view(_event, view, top_frame):
+            if choice == "A":
+                buttonA.config(bg='DarkOrange')
+                master.update()
+            elif choice == "B":
+                buttonB.config(bg='DarkOrange')
+                master.update()
+            elif choice == "C":
+                buttonC.config(bg='DarkOrange')
+                master.update()
+            elif choice == "D":
+                buttonD.config(bg='DarkOrange')
+                master.update()
+            else:
+                assert False
+
+            master.after(1000, lambda: helperToCheck(choice, correctAnswer, buttonA, buttonB,
+                                                     buttonC, buttonD))
+
+    def helperToCheck(choice, correctAnswer, buttonA, buttonB, buttonC, buttonD):
+        global score, state
+        if choice == correctAnswer:
+            score += 1
+            messagebox.showinfo(title="Info", message="Exactly!")
+        else:
+            messagebox.showinfo(title="Info", message="Wrong!")
+            if choice == "A":
+                buttonA.config(bg='Salmon')
+            elif choice == "B":
+                buttonB.config(bg='Salmon')
+            elif choice == "C":
+                buttonC.config(bg='Salmon')
+            elif choice == "D":
+                buttonD.config(bg='Salmon')
+            else:
+                assert False
+
+        if correctAnswer == "A":
+            buttonA.config(bg='SpringGreen')
+        elif correctAnswer == "B":
+            buttonB.config(bg='SpringGreen')
+        elif correctAnswer == "C":
+            buttonC.config(bg='SpringGreen')
+        elif correctAnswer == "D":
+            buttonD.config(bg='SpringGreen')
+        else:
+            assert False
+        if state != State.lastQuestion and state != State.theEnd:
+            state = State.marked
+
+    def changeView(_event, view, topFrame):
             global index, state
             view.pack_forget()
             index += 1
             if index == 9:
                 state = State.lastQuestion
-            show_question(top_frame)
+            showQuestion(topFrame)
 
-    def show_score(_event):
+    def showScore(_event):
         messagebox.showinfo(title="Score", message="Your score: %d" % score)
 
     def end(_event):
@@ -103,27 +149,27 @@ def main():
     master.title("The Quiz about the world")
     master.geometry("700x600")
     master.configure(background='Blue')
-    top_frame = Frame(master, background='Blue')
-    bottom_frame = Frame(master, background='Blue')
-    top_frame.pack()
-    bottom_frame.pack(side=BOTTOM)
+    topFrame = Frame(master, background='Blue')
+    bottomFrame = Frame(master, background='Blue')
+    topFrame.pack()
+    bottomFrame.pack(side=BOTTOM)
 
-    l1 = Label(top_frame, text="Welcome to The Quiz about the world!", background='Blue', fg='white',
+    line1 = Label(topFrame, text="Welcome to The Quiz about the world!", background='Blue', fg='white',
                justify='center')
-    l2 = Label(top_frame, text="The quiz consists of 10 questions about geographical records.",
+    line2 = Label(topFrame, text="The quiz consists of 10 questions about geographical records.",
                background='Blue', fg='white', justify='center')
-    l3 = Label(top_frame, text="It is only one correct answer to even question.", background='Blue',
+    line3 = Label(topFrame, text="It is only one correct answer to even question.", background='Blue',
                fg='white', justify='center')
-    l1.pack()
-    l2.pack()
-    l3.pack()
+    line1.pack()
+    line2.pack()
+    line3.pack()
 
-    b_start = Button(master, text="Start quiz", bg='Violet', fg='white')
-    b_start.bind("<Button-1>", begin)
-    b_start.pack()
-    b_exit = Button(master, text="Exit", command=end, bg='Violet', fg='white')
-    b_exit.bind("<Button-1>", end)
-    b_exit.pack()
+    buttonStart = Button(master, text="Start quiz", bg='Violet', fg='white')
+    buttonStart.bind("<Button-1>", begin)
+    buttonStart.pack()
+    buttonExit = Button(master, text="Exit", command=end, bg='Violet', fg='white')
+    buttonExit.bind("<Button-1>", end)
+    buttonExit.pack()
 
     master.mainloop()
 
