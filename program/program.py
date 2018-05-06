@@ -44,9 +44,9 @@ def main():
         button_start.pack_forget()
         show_question(top_frame)
 
-    def show_question(top_frame):
+    def show_question(top_frame_):
         global state
-        view = Frame(top_frame, bg="Blue")
+        view = Frame(top_frame_, bg="Blue")
         view.pack()
         empty11 = Label(view, text="", bg="Blue")
         empty12 = Label(view, text="", bg="Blue")
@@ -75,7 +75,7 @@ def main():
             button_score.bind("<Button-1>", show_score)
             button_score.pack()
         else:
-            button_next.bind("<Button-1>", lambda e: change_view(e, view, top_frame))
+            button_next.bind("<Button-1>", lambda e: change_view(e, view, top_frame_))
             button_next.pack()
             state = State.unmarked
         button_a.bind("<Button-1>", lambda e: check(e, "A", list_of_questions[index].correct_answer,
@@ -150,13 +150,13 @@ def main():
         if state != State.last_question and state != State.the_end:
             state = State.marked
 
-    def change_view(_event, view, top_frame):
+    def change_view(_event, view, top_frame_):
             global index, state
             view.pack_forget()
             index += 1
             if index == 9:
                 state = State.last_question
-            show_question(top_frame)
+            show_question(top_frame_)
 
     def show_score(_event):
         messagebox.showinfo(title="Score", message="Your score: %d / 10\nThank You for asking the questions"
